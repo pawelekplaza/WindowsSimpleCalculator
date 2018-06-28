@@ -16,6 +16,7 @@ namespace Calc.ViewModels
                 CurrentValue = "0";
                 LastCalcValue = 0;
                 TotalValue = 0;
+                ClearOperationStack();
                 SetBothOperations(Operation.None);
             });
 
@@ -67,18 +68,21 @@ namespace Calc.ViewModels
 
             EqualsCommand = new RelayCommand(() =>
             {
-                if (LastOperation == Operation.None)
+                if (LastOperation != Operation.Equation)
                     LastCalcValue = CurrentValueAsDouble;
 
                 CalculateCurrentValue(LastCalcValue, LastCalcOperation);
                 LastOperation = Operation.Equation;
-                OperationStack = "";
+                ClearOperationStack();
             });
 
             DigitCommand = new RelayCommand<string>((digit) =>
             {
                 if (CurrentValue == "0" || LastOperation != Operation.None)
                     CurrentValue = "";
+
+                if (LastOperation == Operation.Equation)
+                    TotalValue = 0;
 
                 LastOperation = Operation.None;
                 CurrentValue += digit;
@@ -224,6 +228,7 @@ namespace Calc.ViewModels
             else if (LastOperation == Operation.Equation)
             {
                 DoBasicCalculation(operation);
+                SaveTotalValueAndSetLastCalcOperation(operation);
                 return;
             }
 
@@ -237,7 +242,7 @@ namespace Calc.ViewModels
         private void DoBasicCalculation(Operation operation)
         {
             UpdateOperationStack(CurrentValue, operation);
-            SetBothOperations(operation);
+            LastOperation = operation;
             LastCalcValue = CurrentValueAsDouble;
         }
 
@@ -248,11 +253,12 @@ namespace Calc.ViewModels
         {
             if (TotalValue == 0)
             {
-                TotalValue = CurrentValueAsDouble;
+                SaveTotalValueAndSetLastCalcOperation(operation);
                 return;
             }
 
-            TotalValue = operation.Operate(TotalValue, CurrentValueAsDouble);
+            TotalValue = LastCalcOperation.Operate(TotalValue, CurrentValueAsDouble);
+            LastCalcOperation = operation;
             CurrentValue = TotalValue.ToString();
         }
 
@@ -271,6 +277,17 @@ namespace Calc.ViewModels
 
             current = operation.Operate(current, value);
             CurrentValue = current.ToString();
+        }
+
+        private void SaveTotalValueAndSetLastCalcOperation(Operation operation)
+        {
+            TotalValue = CurrentValueAsDouble;
+            LastCalcOperation = operation;
+        }
+
+        private void ClearOperationStack()
+        {
+            OperationStack = string.Empty;
         }
     }
 }
