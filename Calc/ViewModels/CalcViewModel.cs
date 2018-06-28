@@ -14,8 +14,9 @@ namespace Calc.ViewModels
             ClearAllCommand = new RelayCommand(() =>
             {
                 CurrentValue = "0";
+                LastCalcValue = 0;
                 TotalValue = 0;
-                LastOperation = Operation.None;
+                SetBothOperations(Operation.None);
             });
 
             ClearCommand = new RelayCommand(() =>
@@ -37,56 +38,13 @@ namespace Calc.ViewModels
                 CurrentValue = CurrentValue.Remove(CurrentValue.Length - 1, 1);
             });
 
-            DivisionCommand = new RelayCommand(() =>
-            {
+            DivisionCommand = new RelayCommand(() => DoOperation(Operation.Division));
 
+            MultiplicationCommand = new RelayCommand(() => DoOperation(Operation.Multiplication));
 
+            SubtractionCommand = new RelayCommand(() => DoOperation(Operation.Subtraction));
 
-                //if (LastOperation == Operation.None || LastOperation == Operation.Undeterminated)
-                //{
-                //    LastOperation = Operation.Division;
-                //    TotalValue = Convert.ToDouble(CurrentValue);
-                //    CurrentValue = "0";
-                //    return;
-                //}
-
-                //if (CurrentValue == "0")
-                //    return;
-
-                //TotalValue /= Convert.ToDouble(CurrentValue);
-                //RefreshTotalValue();
-            });
-
-            MultiplicationCommand = new RelayCommand(() =>
-            {
-                TotalValue *= CurrentValueAsDouble;
-            });
-
-            SubtractionCommand = new RelayCommand(() =>
-            {
-                TotalValue -= CurrentValueAsDouble;
-            });
-
-            AdditionCommand = new RelayCommand(() =>
-            {
-                if (LastOperation == Operation.Addition)
-                    return;
-
-                else if (LastOperation == Operation.None)
-                {
-                    DoBasicCalculation(Operation.Addition);
-                    TotalValue += CurrentValueAsDouble;
-                    return;
-                }
-                else if (LastOperation == Operation.Equation)
-                {
-                    DoBasicCalculation(Operation.Addition);
-                    return;
-                }
-
-                SetBothOperations(Operation.Addition);
-                return;
-            });
+            AdditionCommand = new RelayCommand(() => DoOperation(Operation.Addition));
 
             NegationCommand = new RelayCommand(() =>
             {
@@ -252,6 +210,30 @@ namespace Calc.ViewModels
             LastCalcOperation = operation;
         }
 
+        private void DoOperation(Operation operation)
+        {
+            if (LastOperation == operation)
+                return;
+
+            else if (LastOperation == Operation.None)
+            {
+                DoBasicCalculation(operation);
+                OperateTotalValue(operation);
+                return;
+            }
+            else if (LastOperation == Operation.Equation)
+            {
+                DoBasicCalculation(operation);
+                return;
+            }
+
+            SetBothOperations(operation);
+            return;
+        }
+
+        /// <summary>
+        /// Only for <see cref="DoOperation(Operation)"/> purposes.
+        /// </summary>
         private void DoBasicCalculation(Operation operation)
         {
             UpdateOperationStack(CurrentValue, operation);
@@ -259,19 +241,35 @@ namespace Calc.ViewModels
             LastCalcValue = CurrentValueAsDouble;
         }
 
+        /// <summary>
+        /// Only for <see cref="DoOperation(Operation)"/> purposes.
+        /// </summary>
+        private void OperateTotalValue(Operation operation)
+        {
+            if (TotalValue == 0)
+            {
+                TotalValue = CurrentValueAsDouble;
+                return;
+            }
+
+            TotalValue = operation.Operate(TotalValue, CurrentValueAsDouble);
+            CurrentValue = TotalValue.ToString();
+        }
+
+        /// <summary>
+        /// Only for <see cref="EqualsCommand"/> purposes.
+        /// </summary>
         private void CalculateCurrentValue(double value, Operation operation)
         {
             var current = CurrentValueAsDouble;
-            switch (operation)
+
+            if (LastOperation == Operation.None)
             {
-                case Operation.Addition: current += value;  break;
-                case Operation.Subtraction: current -= value; break;
-                case Operation.Multiplication: current *= value; break;
-                case Operation.Division: current /= value; break;
-                default:
-                    break;
+                CurrentValue = operation.Operate(TotalValue, current).ToString();
+                return;
             }
 
+            current = operation.Operate(current, value);
             CurrentValue = current.ToString();
         }
     }
