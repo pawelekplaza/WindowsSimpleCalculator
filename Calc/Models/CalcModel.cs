@@ -24,6 +24,8 @@ namespace Calc.Models
         public ICommand NegationCommand { get; set; }
         public ICommand CommaCommand { get; set; }
         public ICommand EqualsCommand { get; set; }
-        public Operation LastOperation { get; set; }        
+        public Operation LastOperation { get; set; }
+        public Operation LastCalcOperation { get; set; }
+        public double LastCalcValue { get; set; }
     }
 }

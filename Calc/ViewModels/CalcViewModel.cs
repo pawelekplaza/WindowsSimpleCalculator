@@ -1,11 +1,6 @@
 ﻿using Calc.Helpers;
 using Calc.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 
 namespace Calc.ViewModels
@@ -44,47 +39,53 @@ namespace Calc.ViewModels
 
             DivisionCommand = new RelayCommand(() =>
             {
-                if (LastOperation == Operation.None || LastOperation == Operation.Undeterminated)
-                {
-                    LastOperation = Operation.Division;
-                    TotalValue = Convert.ToDouble(CurrentValue);
-                    CurrentValue = "0";
-                    return;
-                }
 
-                if (CurrentValue == "0")
-                    return;
 
-                TotalValue /= Convert.ToDouble(CurrentValue);
-                RefreshTotalValue();
+
+                //if (LastOperation == Operation.None || LastOperation == Operation.Undeterminated)
+                //{
+                //    LastOperation = Operation.Division;
+                //    TotalValue = Convert.ToDouble(CurrentValue);
+                //    CurrentValue = "0";
+                //    return;
+                //}
+
+                //if (CurrentValue == "0")
+                //    return;
+
+                //TotalValue /= Convert.ToDouble(CurrentValue);
+                //RefreshTotalValue();
             });
 
             MultiplicationCommand = new RelayCommand(() =>
             {
-                TotalValue *= Convert.ToDouble(CurrentValue);
-                RefreshTotalValue();
+                TotalValue *= CurrentValueAsDouble;
             });
 
             SubtractionCommand = new RelayCommand(() =>
             {
-                TotalValue -= Convert.ToDouble(CurrentValue);
-                RefreshTotalValue();
+                TotalValue -= CurrentValueAsDouble;
             });
 
             AdditionCommand = new RelayCommand(() =>
             {
-                if (LastOperation != Operation.None)
-                {
-                    if (LastOperation == Operation.Addition)
-                        return;
+                if (LastOperation == Operation.Addition)
+                    return;
 
-                    ChangeOperationStackLastSign(Operation.Addition);
+                else if (LastOperation == Operation.None)
+                {
+                    DoBasicCalculation(Operation.Addition);
+                    TotalValue += CurrentValueAsDouble;
+                    return;
+                }
+                else if (LastOperation == Operation.Equation)
+                {
+                    DoBasicCalculation(Operation.Addition);
                     return;
                 }
 
-                TotalValue += Convert.ToDouble(CurrentValue);
-                LastOperation = Operation.Addition;
-                RefreshTotalValue();
+                SetBothOperations(Operation.Addition);
+                return;
             });
 
             NegationCommand = new RelayCommand(() =>
@@ -103,31 +104,25 @@ namespace Calc.ViewModels
                 if (CurrentValue.Contains(","))
                     return;
 
-                //CurrentValue.Insert(CurrentValue.Length - 1, ",");
                 CurrentValue += ",";
             });
 
             EqualsCommand = new RelayCommand(() =>
             {
-                //TotalValue =
+                if (LastOperation == Operation.None)
+                    LastCalcValue = CurrentValueAsDouble;
+
+                CalculateCurrentValue(LastCalcValue, LastCalcOperation);
+                LastOperation = Operation.Equation;
+                OperationStack = "";
             });
 
             DigitCommand = new RelayCommand<string>((digit) =>
             {
-                if (CurrentValue == "0")
+                if (CurrentValue == "0" || LastOperation != Operation.None)
                     CurrentValue = "";
 
-                if (LastOperation == Operation.None)
-                {
-                    CurrentValue = "";
-                    LastOperation = Operation.Undeterminated;
-                }
-                else if (LastOperation != Operation.Undeterminated)
-                {
-                    CurrentValue = "";
-                    LastOperation = Operation.Undeterminated;
-                }
-
+                LastOperation = Operation.None;
                 CurrentValue += digit;
             });
         }
@@ -138,6 +133,8 @@ namespace Calc.ViewModels
             set { _model.CurrentValue = value; RaisePropertyChanged(nameof(CurrentValue)); }
         }
 
+        public double CurrentValueAsDouble => Convert.ToDouble(CurrentValue);
+
         public double TotalValue
         {
             get { return _model.TotalValue; }
@@ -145,6 +142,14 @@ namespace Calc.ViewModels
             {
                 _model.TotalValue = value;
                 RaisePropertyChanged(nameof(TotalValue)); }
+        }
+
+        public string TotalValueString => TotalValue.ToString();
+
+        public double LastCalcValue
+        {
+            get => _model.LastCalcValue;
+            set { _model.LastCalcValue = value; RaisePropertyChanged(nameof(LastCalcValue)); }
         }
 
         public string OperationStack
@@ -157,6 +162,12 @@ namespace Calc.ViewModels
         {
             get { return _model.LastOperation; }
             set { _model.LastOperation = value; RaisePropertyChanged(nameof(LastOperation)); }
+        }
+
+        public Operation LastCalcOperation
+        {
+            get => _model.LastCalcOperation;
+            set { _model.LastCalcOperation = value; RaisePropertyChanged(nameof(LastCalcOperation)); }
         }
 
         public ICommand ClearAllCommand
@@ -232,13 +243,36 @@ namespace Calc.ViewModels
 
         private void ChangeOperationStackLastSign(Operation operation)
         {
-            OperationStack = OperationStack.Remove(OperationStack.Length - 1, 1) + operation.GetSign();            
+            OperationStack = OperationStack.Remove(OperationStack.Length - 1, 1) + operation.GetSign();
         }
 
-        private void RefreshTotalValue()
+        private void SetBothOperations(Operation operation)
         {
-            CurrentValue = TotalValue.ToString();
-            LastOperation = Operation.None;
+            LastOperation = operation;
+            LastCalcOperation = operation;
+        }
+
+        private void DoBasicCalculation(Operation operation)
+        {
+            UpdateOperationStack(CurrentValue, operation);
+            SetBothOperations(operation);
+            LastCalcValue = CurrentValueAsDouble;
+        }
+
+        private void CalculateCurrentValue(double value, Operation operation)
+        {
+            var current = CurrentValueAsDouble;
+            switch (operation)
+            {
+                case Operation.Addition: current += value;  break;
+                case Operation.Subtraction: current -= value; break;
+                case Operation.Multiplication: current *= value; break;
+                case Operation.Division: current /= value; break;
+                default:
+                    break;
+            }
+
+            CurrentValue = current.ToString();
         }
     }
 }
