@@ -1,0 +1,16 @@
+﻿<Application x:Class="Calc.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Calc"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Styles/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/TextblockStyles.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/DrawingBrushes.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/CalcButtonStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

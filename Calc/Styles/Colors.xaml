@@ -1,0 +1,20 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Calc.Styles">
+
+    <Color x:Key="lightButton">#eff3f6</Color>
+    <SolidColorBrush x:Key="lightButtonBrush" Color="{StaticResource lightButton}"/>
+
+    <Color x:Key="darkerButton">#ccdce9</Color>
+    <SolidColorBrush x:Key="darkerButtonBrush" Color="{StaticResource darkerButton}"/>
+
+    <Color x:Key="digitMouseOver">#9D9FA1</Color>
+    <SolidColorBrush x:Key="digitMouseOverBrush" Color="{StaticResource digitMouseOver}"/>
+
+    <Color x:Key="calcMouseOver">#75C2FF</Color>
+    <SolidColorBrush x:Key="calcMouseOverBrush" Color="{StaticResource calcMouseOver}"/>
+
+    <Color x:Key="backgroundStart">#acc1d2</Color>
+    <Color x:Key="backgroundEnd">#b1c4d3</Color>
+
+</ResourceDictionary>

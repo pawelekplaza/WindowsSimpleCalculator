@@ -1,0 +1,190 @@
+﻿<Window x:Class="Calc.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Calc"
+        xmlns:converters="clr-namespace:Calc.Converters"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="320"
+        MinHeight="350" MinWidth="320">
+
+    <Window.Resources>
+        <converters:LastOperationToStringConverter x:Key="LastOperationToStringConverter"/>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="3*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Offset="0" Color="{StaticResource backgroundStart}"/>
+                <GradientStop Offset="1" Color="{StaticResource backgroundEnd}"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <Grid HorizontalAlignment="Right"
+              Margin="0 10 20 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="10"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Stack -->
+            <TextBlock Text="{Binding OperationStack, FallbackValue='255'}"
+                   FontSize="14" />
+
+            <!-- Last operation -->
+            <TextBlock Text="{Binding LastOperation, Converter={StaticResource LastOperationToStringConverter}, UpdateSourceTrigger=PropertyChanged}"
+                       Grid.Column="1"
+                       FontSize="14"/>
+
+        </Grid>
+
+        <!-- Current value -->
+        <Viewbox HorizontalAlignment="Right" Margin="0 20 20 0">
+            <TextBlock Text="{Binding CurrentValue, FallbackValue='0'}" FontSize="36" TextAlignment="Right" />
+        </Viewbox>
+
+        <!-- Buttons -->
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <!-- CE -->
+            <local:CalcButton Style="{StaticResource calcButtonStyle}" 
+                              Command="{Binding ClearCommand}">
+                <TextBlock Text="CE" Style="{StaticResource calcTextBlock}"/>
+            </local:CalcButton>
+            
+            <!-- C -->
+            <local:CalcButton Grid.Column="1" Style="{StaticResource calcButtonStyle}" 
+                              Command="{Binding ClearAllCommand}">
+                <TextBlock Text="C" Style="{StaticResource calcTextBlock}"/>
+            </local:CalcButton>
+            
+            <!-- Remove -->
+            <local:CalcButton Grid.Column="2" Style="{StaticResource calcButtonStyle}" 
+                              Command="{Binding RemoveCommand}">
+                <Rectangle Width="20" Height="10" Fill="{StaticResource removeButtonDrawing}" />
+            </local:CalcButton>
+            
+            <!-- Division -->
+            <local:CalcButton Grid.Column="3" Style="{StaticResource calcButtonStyle}" 
+                              Command="{Binding DivisionCommand}">
+                <Rectangle Width="15" Height="10" Fill="{StaticResource divisionButtonDrawing}" />
+            </local:CalcButton>
+            
+            <!-- 7 -->
+            <local:CalcButton Grid.Row="1" Style="{StaticResource digitCalcButtonStyle}" 
+                              Command="{Binding DigitCommand}" CommandParameter="7">
+                <TextBlock Text="7" Style="{StaticResource digitTextBlock}" />
+            </local:CalcButton>
+
+            <!-- 8 -->
+            <local:CalcButton Grid.Row="1" Grid.Column="1" Style="{StaticResource digitCalcButtonStyle}" 
+                              Command="{Binding DigitCommand}" CommandParameter="8">
+                <TextBlock Text="8" Style="{StaticResource digitTextBlock}" />
+            </local:CalcButton>
+            
+            <!-- 9 -->
+            <local:CalcButton Grid.Row="1" Grid.Column="2" Style="{StaticResource digitCalcButtonStyle}"
+                              Command="{Binding DigitCommand}" CommandParameter="9">
+                <TextBlock Text="9" Style="{StaticResource digitTextBlock}" />
+            </local:CalcButton>
+            
+            <!-- Multiplication -->
+            <local:CalcButton Grid.Row="1" Grid.Column="3" Style="{StaticResource calcButtonStyle}"
+                              Command="{Binding MultiplicationCommand}">
+                <Rectangle Width="10" Height="10" Fill="{StaticResource multiplicationButtonDrawing}" />
+            </local:CalcButton>
+            
+            <!-- 4 -->
+            <local:CalcButton Grid.Row="2" Style="{StaticResource digitCalcButtonStyle}"
+                              Command="{Binding DigitCommand}" CommandParameter="4">
+                <TextBlock Text="4" Style="{StaticResource digitTextBlock}" />
+            </local:CalcButton>
+            
+            <!-- 5 -->
+            <local:CalcButton Grid.Row="2" Grid.Column="1" Style="{StaticResource digitCalcButtonStyle}"
+                              Command="{Binding DigitCommand}" CommandParameter="5">
+                <TextBlock Text="5" Style="{StaticResource digitTextBlock}" />
+            </local:CalcButton>
+            
+            <!-- 6 -->
+            <local:CalcButton Grid.Row="2" Grid.Column="2" Style="{StaticResource digitCalcButtonStyle}"
+                              Command="{Binding DigitCommand}" CommandParameter="6">
+                <TextBlock Text="6" Style="{StaticResource digitTextBlock}" />
+            </local:CalcButton>
+            
+            <!-- Subtraction -->
+            <local:CalcButton Grid.Row="2" Grid.Column="3" Style="{StaticResource calcButtonStyle}"
+                              Command="{Binding SubtractionCommand}">
+                <Rectangle Height="10" Width="10" Fill="{StaticResource subtractionButtonDrawing}"/>
+            </local:CalcButton>
+            
+            <!-- 1 -->
+            <local:CalcButton Grid.Row="3" Style="{StaticResource digitCalcButtonStyle}"
+                              Command="{Binding DigitCommand}" CommandParameter="1">
+                <TextBlock Text="1" Style="{StaticResource digitTextBlock}" />
+            </local:CalcButton>
+            
+            <!-- 2 -->
+            <local:CalcButton Grid.Row="3" Grid.Column="1" Style="{StaticResource digitCalcButtonStyle}"
+                              Command="{Binding DigitCommand}" CommandParameter="2">
+                <TextBlock Text="2" Style="{StaticResource digitTextBlock}" />
+            </local:CalcButton>
+            
+            <!-- 3 -->
+            <local:CalcButton Grid.Row="3" Grid.Column="2" Style="{StaticResource digitCalcButtonStyle}"
+                              Command="{Binding DigitCommand}" CommandParameter="3">
+                <TextBlock Text="3" Style="{StaticResource digitTextBlock}" />
+            </local:CalcButton>
+            
+            <!-- Addition -->
+            <local:CalcButton Grid.Row="3" Grid.Column="3" Style="{StaticResource calcButtonStyle}"
+                              Command="{Binding AdditionCommand}">
+                <Rectangle Width="10" Height="10" Fill="{StaticResource additionButtonDrawing}"/>
+            </local:CalcButton>
+            
+            <!-- Negation -->
+            <local:CalcButton Grid.Row="4" Style="{StaticResource calcButtonStyle}"
+                              Command="{Binding NegationCommand}">
+                <Rectangle Width="10" Height="10" Fill="{StaticResource negationButtonDrawing}"/>
+            </local:CalcButton>
+            
+            <!-- 0 -->
+            <local:CalcButton Grid.Row="4" Grid.Column="1" Style="{StaticResource digitCalcButtonStyle}"
+                              Command="{Binding DigitCommand}" CommandParameter="0">
+                <TextBlock Text="0" Style="{StaticResource digitTextBlock}"/>
+            </local:CalcButton>
+            
+            <!-- Comma -->
+            <local:CalcButton Grid.Row="4" Grid.Column="2" ContentMargin="5" Style="{StaticResource calcButtonStyle}"
+                              Command="{Binding CommaCommand}">
+                <TextBlock Text="," Style="{StaticResource digitTextBlock}"/>
+            </local:CalcButton>
+            
+            <!-- Equals -->
+            <local:CalcButton Grid.Row="4" Grid.Column="3" Style="{StaticResource calcButtonStyle}"
+                              Command="{Binding EqualsCommand}">
+                <Rectangle Width="10" Height="10" Fill="{StaticResource equalsButtonDrawing}"/>
+            </local:CalcButton>
+        </Grid>
+
+    </Grid>
+</Window>
