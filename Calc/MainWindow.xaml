@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Calc"
         xmlns:converters="clr-namespace:Calc.Converters"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="320"
+        Title="Calc" Height="350" Width="320"
         MinHeight="350" MinWidth="320">
 
     <Window.InputBindings>
