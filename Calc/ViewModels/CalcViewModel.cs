@@ -205,7 +205,7 @@ namespace Calc.ViewModels
 
         private void ChangeOperationStackLastSign(Operation operation)
         {
-            OperationStack = OperationStack.Remove(OperationStack.Length - 1, 1) + operation.GetSign();
+            OperationStack = OperationStack.Remove(OperationStack.Length - 2, 2) + $"{ operation.GetSign() } ";
         }
 
         private void SetBothOperations(Operation operation)
@@ -233,6 +233,7 @@ namespace Calc.ViewModels
             }
 
             SetBothOperations(operation);
+            ChangeOperationStackLastSign(operation);
             return;
         }
 
